@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>English Challenge - 45 Questions</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#eef2ff,#f8fafc);color:#172033}.wrap{max-width:760px;margin:auto;padding:18px}.card{background:#fff;border-radius:22px;padding:24px;box-shadow:0 10px 35px #0001;margin-top:18px}h1{text-align:center;margin:4px 0 8px}.sub{text-align:center;color:#64748b}.levels{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:18px 0}.pill{padding:9px 14px;border-radius:999px;font-weight:700}.e{background:#dcfce7;color:#166534}.m{background:#fef3c7;color:#92400e}.h{background:#fee2e2;color:#991b1b}button{width:100%;border:0;border-radius:13px;padding:14px;margin-top:10px;font-size:16px;font-weight:700;cursor:pointer;background:#4f46e5;color:white}.option{background:#f1f5f9;color:#172033;text-align:left}.option.correct{background:#dcfce7;color:#166534}.option.wrong{background:#fee2e2;color:#991b1b}.top{display:flex;justify-content:space-between;font-weight:700}.progress{height:9px;background:#e2e8f0;border-radius:9px;margin:15px 0;overflow:hidden}.bar{height:100%;background:#4f46e5;width:0}.q{font-size:21px;font-weight:700;line-height:1.45;margin:22px 0}.box{padding:14px;border-radius:10px;margin-top:12px;line-height:1.5}.meaning{background:#f8fafc;border-left:4px solid #4f46e5}.explain{background:#fff7ed;color:#7c2d12}.hidden{display:none}.score{text-align:center;font-size:52px;font-weight:800;color:#4f46e5}.review{padding:12px 0;border-bottom:1px solid #e2e8f0}.small{color:#64748b;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="start" class="card">
+<h1>🎯 English Challenge</h1>
+<p class="sub">45 Questions • Easy → Medium → Hard</p>
+<div class="levels"><span class="pill e">Easy · 10</span><span class="pill m">Medium · 15</span><span class="pill h">Hard · 20</span></div>
+<p>Choose the correct answer. After every question, you will see the Tamil meaning and a simple explanation.</p>
+<button onclick="start()">🚀 Start Quiz</button>
+</section>
+
+<section id="quiz" class="card hidden">
+<div class="top"><span id="lvl"></span><span id="count"></span></div>
+<div class="progress"><div id="bar" class="bar"></div></div>
+<div id="q" class="q"></div>
+<div id="opts"></div>
+<div id="feedback" class="hidden"></div>
+<button id="next" class="hidden" onclick="next()">Next Question ➜</button>
+</section>
+
+<section id="result" class="card hidden">
+<h1>🏆 Quiz Complete!</h1>
+<div id="score" class="score"></div>
+<h2 id="msg" style="text-align:center"></h2>
+<p class="sub">Easy: 10 • Medium: 15 • Hard: 20</p>
+<div id="review"></div>
+<button onclick="location.reload()">🔄 Play Again</button>
+</section>
+</div>
+
+<script>
+const qs=[
+["Easy","I ___ a student.",["am","is","are","be"],0,"நான் ஒரு மாணவன் / மாணவி.","I என்பதுடன் am பயன்படுத்த வேண்டும்."],
+["Easy","She ___ to school every day.",["go","goes","going","gone"],1,"அவள் தினமும் பள்ளிக்குச் செல்கிறாள்.","She/He/It உடன் simple present-ல் verb-க்கு s/es வரும்."],
+["Easy","They ___ happy today.",["is","am","are","be"],2,"அவர்கள் இன்று மகிழ்ச்சியாக இருக்கிறார்கள்.","They என்பதுடன் are பயன்படுத்த வேண்டும்."],
+["Easy","I ___ tea every morning.",["drink","drinks","drinking","drank"],0,"நான் தினமும் காலையில் தேநீர் குடிக்கிறேன்.","I என்பதுடன் base verb drink."],
+["Easy","He ___ a new bike yesterday.",["buy","buys","bought","buying"],2,"அவன் நேற்று ஒரு புதிய பைக் வாங்கினான்.","Yesterday கடந்த காலம்; buy-ன் past form bought."],
+["Easy","We ___ English every day.",["learn","learns","learning","learned"],0,"நாங்கள் தினமும் ஆங்கிலம் கற்கிறோம்.","We என்பதுடன் base verb learn."],
+["Easy","My brother ___ very tall.",["are","am","is","be"],2,"என் சகோதரன் மிகவும் உயரமாக இருக்கிறான்.","My brother ஒருமை; அதனால் is."],
+["Easy","I ___ my homework last night.",["finish","finishes","finished","finishing"],2,"நான் நேற்று இரவு என் வீட்டுப்பாடத்தை முடித்தேன்.","Last night கடந்த காலம்; finished சரியானது."],
+["Easy","She ___ cooking now.",["is","are","am","be"],0,"அவள் இப்போது சமைத்துக் கொண்டிருக்கிறாள்.","Now + continuous tense: is cooking."],
+["Easy","There ___ two books on the table.",["is","are","am","be"],1,"மேசையின் மேல் இரண்டு புத்தகங்கள் உள்ளன.","Two books plural என்பதால் are."],
+
+["Medium","I ___ never seen this movie.",["have","has","am","was"],0,"நான் இந்தப் படத்தை இதுவரை பார்த்ததே இல்லை.","I உடன் present perfect-ல் have + past participle."],
+["Medium","She ___ cooking when I called her.",["is","was","were","has"],1,"நான் அவளை அழைத்தபோது அவள் சமைத்துக் கொண்டிருந்தாள்.","கடந்த நேரத்தில் நடந்து கொண்டிருந்த செயல்: was cooking."],
+["Medium","If it rains, we ___ stay at home.",["will","would","are","have"],0,"மழை பெய்தால், நாங்கள் வீட்டில் இருப்போம்.","First conditional: If + present, will + verb."],
+["Medium","I have been working here ___ 2023.",["for","since","from","during"],1,"நான் 2023 முதல் இங்கே வேலை செய்து வருகிறேன்.","குறிப்பிட்ட தொடக்க நேரத்துடன் since."],
+["Medium","He is interested ___ learning English.",["in","on","at","for"],0,"அவன் ஆங்கிலம் கற்பதில் ஆர்வமாக இருக்கிறான்.","Correct phrase: interested in."],
+["Medium","She has lived here ___ five years.",["since","from","for","during"],2,"அவள் இங்கே ஐந்து ஆண்டுகளாக வசித்து வருகிறாள்.","கால அளவுடன் for."],
+["Medium","I ___ to the market before it started raining.",["went","had gone","have gone","go"],1,"மழை தொடங்குவதற்கு முன்பு நான் சந்தைக்குச் சென்றிருந்தேன்.","முன்னதாக நடந்த past action: had gone."],
+["Medium","He asked me where I ___.",["live","lived","am living","have lived"],1,"நான் எங்கே வசிக்கிறேன் என்று அவன் கேட்டான்.","Reported speech-ல் lived பயன்படுத்தப்படுகிறது."],
+["Medium","Neither of the answers ___ correct.",["are","were","is","be"],2,"இரண்டு பதில்களில் எதுவும் சரியானது அல்ல.","Neither ஒருமை; அதனால் is."],
+["Medium","I am used to ___ early.",["wake","waking","woke","wakes"],1,"நான் சீக்கிரம் எழுவதற்கு பழகிவிட்டேன்.","be used to + gerund: waking."],
+["Medium","She speaks English ___ than her brother.",["good","well","better","best"],2,"அவள் தனது சகோதரனைவிட நன்றாக ஆங்கிலம் பேசுகிறாள்.","ஒப்பீடு என்பதால் comparative better."],
+["Medium","You should ___ your work before leaving.",["finish","finished","finishing","finishes"],0,"நீ கிளம்புவதற்கு முன் வேலையை முடிக்க வேண்டும்.","should-க்கு பிறகு base verb."],
+["Medium","I wish I ___ more free time.",["have","had","will have","am having"],1,"எனக்கு இன்னும் அதிகமான ஓய்வு நேரம் இருந்தால் நன்றாக இருக்கும்.","Present unreal wish-க்கு had."],
+["Medium","The meeting was cancelled ___ the heavy rain.",["because","because of","although","despite"],1,"கனமழை காரணமாக கூட்டம் ரத்து செய்யப்பட்டது.","Because of + noun phrase."],
+["Medium","By next month, I ___ this course.",["complete","completed","will have completed","am completing"],2,"அடுத்த மாதத்திற்குள் இந்தப் படிப்பை முடித்திருப்பேன்.","Future deadline-க்கு முன் முடிந்திருக்கும் செயல்: will have completed."],
+
+["Hard","If I ___ you, I would accept the offer.",["am","was","were","be"],2,"நான் உன் நிலையில் இருந்தால், அந்த வாய்ப்பை ஏற்றுக்கொள்வேன்.","Hypothetical condition-ல் I உடனும் were."],
+["Hard","By the time we arrived, the movie ___.",["started","has started","had started","was starting"],2,"நாங்கள் வந்த நேரத்திற்குள் படம் தொடங்கியிருந்தது.","மற்றொரு past action-க்கு முன் நடந்தது: had started."],
+["Hard","She would have passed the exam if she ___ harder.",["studied","had studied","has studied","would study"],1,"அவள் இன்னும் கடினமாகப் படித்திருந்தால் தேர்ச்சி பெற்றிருப்பாள்.","Third conditional: if + had studied."],
+["Hard","Hardly had I reached home ___ it started raining.",["than","when","then","while"],1,"நான் வீட்டை அடைந்தவுடனேயே மழை தொடங்கியது.","Hardly...when என்பது நிலையான இணைப்பு."],
+["Hard","Neither the manager nor the employees ___ aware of the change.",["was","were","is","has"],1,"மேலாளருக்கும் ஊழியர்களுக்கும் மாற்றம் தெரியவில்லை.","அருகிலுள்ள subject employees plural; அதனால் were."],
+["Hard","The report needs ___ before submission.",["to revise","revising","revised","revise"],1,"அறிக்கையை சமர்ப்பிப்பதற்கு முன் திருத்த வேண்டும்.","needs + gerund: needs revising."],
+["Hard","No sooner had he arrived ___ the meeting began.",["when","than","then","while"],1,"அவன் வந்தவுடனேயே கூட்டம் தொடங்கியது.","No sooner...than என்பது நிலையான இணைப்பு."],
+["Hard","I would rather you ___ me the truth.",["tell","told","telling","will tell"],1,"நீ என்னிடம் உண்மையைச் சொன்னால் நான் விரும்புவேன்.","would rather + subject + past form."],
+["Hard","Despite ___ tired, she continued working.",["be","being","was","been"],1,"சோர்வாக இருந்தபோதிலும், அவள் தொடர்ந்து வேலை செய்தாள்.","Despite-க்கு பிறகு noun/gerund; இங்கு being."],
+["Hard","The person ___ car was stolen reported it to the police.",["who","which","whose","whom"],2,"யாருடைய கார் திருடப்பட்டதோ அந்த நபர் புகார் செய்தார்.","Possession காட்ட whose."],
+["Hard","It is essential that every employee ___ on time.",["arrives","arrive","arrived","arriving"],1,"ஒவ்வொரு ஊழியரும் சரியான நேரத்தில் வருவது அவசியம்.","Formal subjunctive: essential that + base verb."],
+["Hard","Had I known about the problem, I ___ helped you.",["will have","would have","would","had"],1,"பிரச்சினை தெரிந்திருந்தால் நான் உதவியிருப்பேன்.","Inverted third conditional: would have helped."],
+["Hard","She denied ___ the confidential document.",["to take","taking","take","taken"],1,"அவள் ரகசிய ஆவணத்தை எடுத்ததை மறுத்தாள்.","Deny-க்கு பிறகு gerund."],
+["Hard","The project, along with its supporting documents, ___ ready.",["are","were","is","have"],2,"திட்டமும் அதனுடன் உள்ள ஆவணங்களும் தயாராக உள்ளன.","Main subject project singular; along with subject-ஐ plural ஆக்காது."],
+["Hard","If he had left earlier, he ___ the train.",["would catch","would have caught","will catch","caught"],1,"அவன் முன்பே கிளம்பியிருந்தால் ரயிலைப் பிடித்திருப்பான்.","Third conditional result: would have caught."],
+["Hard","She is one of the employees who ___ consistently performed well.",["has","have","is","was"],1,"அவள் தொடர்ந்து சிறப்பாக செயல்பட்ட ஊழியர்களில் ஒருத்தி.","who என்பது employees-ஐ குறிக்கும்; plural என்பதால் have."],
+["Hard","Not only ___ late, but he also forgot the documents.",["he was","was he","he is","is he"],1,"அவன் தாமதமாக வந்தது மட்டுமல்லாமல், ஆவணங்களையும் மறந்தான்.","Not only தொடக்கத்தில் வந்தால் inversion."],
+["Hard","The work ___ by Friday if everything goes as planned.",["will finish","will be finished","finished","has finished"],1,"எல்லாம் திட்டமிட்டபடி நடந்தால் வேலை வெள்ளிக்கிழமைக்குள் முடிக்கப்படும்.","Passive voice: will be finished."],
+["Hard","I regret ___ you that your application was unsuccessful.",["inform","to inform","informing","informed"],1,"உங்கள் விண்ணப்பம் வெற்றியடையவில்லை என்பதைத் தெரிவிக்க வருந்துகிறேன்.","Bad news தெரிவிக்க: regret to inform."],
+["Hard","Having ___ the instructions, he started the task.",["read","reads","reading","reader"],0,"வழிமுறைகளைப் படித்த பிறகு, அவன் பணியைத் தொடங்கினான்.","Having + past participle; read-ன் past participle read."]
+];
+
+let i=0,score=0,done=false,review=[];
+function start(){document.getElementById("start").classList.add("hidden");document.getElementById("quiz").classList.remove("hidden");show();}
+function show(){
+ done=false;let x=qs[i];
+ document.getElementById("lvl").textContent=x[0]=="Easy"?"🟢 Easy":x[0]=="Medium"?"🟡 Medium":"🔴 Hard";
+ document.getElementById("count").textContent=`Question ${i+1} / 45`;
+ document.getElementById("bar").style.width=(i/45*100)+"%";
+ document.getElementById("q").textContent=x[1];
+ let o=document.getElementById("opts");o.innerHTML="";
+ x[2].forEach((v,n)=>{let b=document.createElement("button");b.className="option";b.textContent=String.fromCharCode(65+n)+". "+v;b.onclick=()=>answer(n,b);o.appendChild(b)});
+ document.getElementById("feedback").className="hidden";document.getElementById("next").className="hidden";
+}
+function answer(n,b){
+ if(done)return;done=true;let x=qs[i],ok=n==x[3];if(ok)score++;
+ document.querySelectorAll(".option").forEach((z,k)=>{if(k==x[3])z.classList.add("correct")});
+ if(!ok)b.classList.add("wrong");
+ review.push([x[1],x[2][n],x[2][x[3]],ok]);
+ let f=document.getElementById("feedback");f.className="";
+ f.innerHTML=`<div class="box meaning"><b>🇮🇳 Tamil Meaning:</b><br>${x[4]}</div><div class="box explain"><b>💡 Explanation:</b> ${x[5]}</div>`;
+ document.getElementById("next").className="";
+ document.getElementById("bar").style.width=((i+1)/45*100)+"%";
+}
+function next(){i++;if(i<45)show();else finish();}
+function finish(){
+ document.getElementById("quiz").classList.add("hidden");document.getElementById("result").classList.remove("hidden");
+ document.getElementById("score").textContent=score+" / 45";
+ document.getElementById("msg").textContent=score>=40?"🔥 Excellent!":score>=30?"👏 Great job!":score>=20?"👍 Good attempt!":"💪 Keep practising!";
+ document.getElementById("review").innerHTML="<h3>📋 Answer Review</h3>"+review.map((r,n)=>`<div class="review"><b>${n+1}. ${r[0]}</b><br><span class="small">${r[3]?"✅ Correct":"❌ Your answer: "+r[1]+" | Correct: "+r[2]}</span></div>`).join("");
+}
+</script>
+</body>
+</html>
